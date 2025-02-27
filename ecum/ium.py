@@ -71,7 +71,7 @@ def NormT1(string):
 
 def PATRONVAL(qw):
     return next((n for p, n in DICRE.get(qw[1], []) if re.match(p, qw[0])), 0)
-
+"""
 def packIUM(text):
     tokens = ClasTexARRAY(text)
     resultado1 = [PATRONVAL((token[0], token[1])) for token in tokens]
@@ -81,12 +81,37 @@ def packIUM(text):
                              for jpatr in lpatrones for match in re.finditer(jpatr[0], strVEC)],
                             columns=['a', 'b', 'c']).drop_duplicates('a', keep='first')
     return [("".join(tokens[int(k1):int(k2), 0]), k3) for k1, k2, k3 in dfmatch.to_numpy()]
+"""
+def packIUM(text):
+    tokens = ClasTexARRAY(text)
+    resultado1 = [PATRONVAL((token[0], token[1])) for token in tokens]
+    strVEC = "".join(["aaaa" if x == 0 else str(x) for x in resultado1])
+    
+    dfmatch = pd.DataFrame([(int(match.start() / 4), int(match.end() / 4), jpatr[1])
+                             for jpatr in lpatrones for match in re.finditer(jpatr[0], strVEC)],
+                            columns=['a', 'b', 'c']).drop_duplicates('a', keep='first')
+    unique_results = set((("".join(tokens[int(k1):int(k2), 0])), k3) for k1, k2, k3 in dfmatch.to_numpy())
+    return list(unique_results)
 
+"""
 def packIUMuno(text):
     return next(iter(packIUM(text)), (0, "SIN_IUM"))
+"""
+def packIUMuno(text):
+    # Obtenemos los resultados de packIUM y los convertimos a un conjunto para eliminar duplicados
+    results = set(packIUM(text))
+    # Tomamos el primer elemento o el valor por defecto
+    return next(iter(results), (0, "SIN_IUM"))
 
+
+#def packIUMtotEXC(text):
+#    return "|".join(f"{j[0]},{j[1]}" for j in packIUM(text)) or "0,SIN_IUM"
+ 
 def packIUMtotEXC(text):
-    return "|".join(f"{j[0]},{j[1]}" for j in packIUM(text)) or "0,SIN_IUM"
+    # Aplicamos set() para eliminar duplicados
+    unique_results = set(f"{j[0]},{j[1]}" for j in packIUM(text))
+    # Unimos los resultados con "|" o devolvemos el valor por defecto si no hay resultados
+    return "|".join(unique_results) or "0,SIN_IUM"
 
 
 
@@ -94,7 +119,7 @@ initialize()  # Se llama una sola vez para cargar los valores en memoria
 
 
 if __name__ == "__main__":
-    textor = '1K1027361000103,IUM_Ok|1K1027361200102,IUM_Ok|AA1234561234123,Err_IUM_4'
+    textor = '1K1027361000103,IUM_Ok|1K1027361200102,IUM_Ok|AA1234561234123,Err_IUM_4|AA1234561234123,Err_IUM_4|AA1234561234123,Err_IUM_4|AA1234561234123,Err_IUM_4'
     print(packIUMtotEXC(textor))
     print(packIUMuno(textor))
     print(packIUM(textor))
