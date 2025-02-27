@@ -29,12 +29,32 @@ def load_patterns():
     ]
 
 def load_parametric_tables():
-    TPECUM = pd.read_parquet("ecum\\TPECUM.parquet")
+    # Obtener la ruta absoluta de la carpeta del paquete
+    base_path = os.path.dirname(os.path.abspath(__file__))
+
+    # Construir la ruta correcta para acceder a la carpeta "data"
+    data_path = os.path.join(base_path, "..", "data")
+
+    # Construir rutas completas de los archivos parquet
+    file_tpecum = os.path.join(data_path, "TPECUM.parquet")
+    file_tpecum_sec = os.path.join(data_path, "TPECUM_SEC.parquet")
+
+    # Verificar si los archivos existen antes de cargarlos
+    if not os.path.exists(file_tpecum):
+        raise FileNotFoundError(f"El archivo {file_tpecum} no existe. Verifica la ubicación.")
+
+    if not os.path.exists(file_tpecum_sec):
+        raise FileNotFoundError(f"El archivo {file_tpecum_sec} no existe. Verifica la ubicación.")
+
+    # Cargar las tablas
+    TPECUM = pd.read_parquet(file_tpecum)
     DICRE = {j: TPECUM[TPECUM['CLASL'] == j][['RE', 'CLASLR']].to_numpy() for j in TPECUM['CLASL'].unique()}
 
-    TPECUM_SEC = pd.read_parquet("ecum\\TPECUM_SEC.parquet")
+    TPECUM_SEC = pd.read_parquet(file_tpecum_sec)
     lpatrones = TPECUM_SEC[['PATRON', 'cod_err']].to_numpy()
+
     return DICRE, lpatrones
+
 
 def ClasTexARRAY(text):
     tokens = descripNorm(text)
