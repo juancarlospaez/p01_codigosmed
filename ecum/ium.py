@@ -29,25 +29,10 @@ def load_patterns():
     ]
 
 def load_parametric_tables():
-
-    # Obtener la ruta absoluta de la carpeta donde se encuentra este script (ium.py)
-    base_path = os.path.dirname(os.path.abspath(__file__))  
-
-    # Subir un nivel y acceder a la carpeta donde está el archivo
-    parent_path = os.path.abspath(os.path.join(base_path, "..", "data"))
-    # Construir la ruta completa del archivo
-    file_path = os.path.join(parent_path, "TPECUM.parquet")
-    TPECUM = pd.read_parquet(file_path)
+    TPECUM = pd.read_parquet("ecum\\TPECUM.parquet")
     DICRE = {j: TPECUM[TPECUM['CLASL'] == j][['RE', 'CLASLR']].to_numpy() for j in TPECUM['CLASL'].unique()}
 
-
-    # Obtener la ruta absoluta de la carpeta donde se encuentra este script (ium.py)
-    base_path = os.path.dirname(os.path.abspath(__file__))  
-    # Subir un nivel y acceder a la carpeta donde está el archivo
-    parent_path = os.path.abspath(os.path.join(base_path, "..", "data"))
-    # Construir la ruta completa del archivo
-    file_path = os.path.join(parent_path, "TPECUM_SEC.parquet")
-    TPECUM_SEC = pd.read_parquet(file_path)
+    TPECUM_SEC = pd.read_parquet("ecum\\TPECUM_SEC.parquet")
     lpatrones = TPECUM_SEC[['PATRON', 'cod_err']].to_numpy()
     return DICRE, lpatrones
 
