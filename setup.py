@@ -6,7 +6,7 @@ with open("requirements.txt") as f:
 
 setup(
     name="p01_codigosmed",  # Nombre del paquete
-    version="0.1.7",  # Versión inicial
+    version="0.1.8",  # Versión inicial
     author="Juan Paez",
     author_email="jcpaez@gmail.com",
     description="Identificación de los códigos IUM de medicamentos",
