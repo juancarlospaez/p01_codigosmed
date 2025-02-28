@@ -1,63 +1,92 @@
-# 📦 Procesador de Códigos IUM
+# medkode
 
-Este paquete permite la validación y clasificación de códigos IUM utilizando expresiones regulares y tablas paramétricas.
+**medkode** es una librería en Python que permite extraer, validar y clasificar códigos de Identificación Única de Medicamentos (IUM) según la codificación adoptada por el Ministerio de Salud y Protección Social de Colombia.
 
-## 🚀 Instalación
+## Instalación
 
-Asegúrate de tener las dependencias necesarias instaladas:
-
-```sh
-pip install pandas numpy nltk unidecode
+Para instalar la librería, usa:
+```bash
+pip install medkode
 ```
 
-## 📂 Estructura del Proyecto
+## Uso
 
-```
-mi_paquete/
-│── data/
-│   ├── TPECUM.parquet
-│   ├── TPECUM_SEC.parquet
-│── main.py
-│── requirements.txt
-│── setup.py
-│── README.md
-```
+La librería proporciona tres funciones principales para la extracción y validación de códigos IUM en un texto.
 
-## 🛠️ Uso
+### 1. `ium_pipe(texto: str) -> str`
+Esta función recibe un texto y devuelve una cadena con los códigos IUM encontrados, clasificados y separados por `|`.
 
-Ejemplo de ejecución:
-
+**Ejemplo:**
 ```python
-from mi_paquete import packIUMtotEXC, packIUMuno, packIUM, load_patterns, load_parametric_tables
+from medkode import ium_pipe
 
-# Cargar patrones y tablas paramétricas
-patrones = load_patterns()
-DICRE, lpatrones = load_parametric_tables()
-
-# Texto de prueba
-testor = '1K1027361000103,IUM_Ok|1K1027361200102,IUM_Ok|AA1234561234123,Err_IUM_4'
-
-# Procesamiento de códigos IUM
-print(packIUMtotEXC(testor, patrones, DICRE, lpatrones))
-print(packIUMuno(testor, patrones, DICRE, lpatrones))
-print(packIUM(testor, patrones, DICRE, lpatrones))
+texto = "El medicamento tiene código 1K1027361200102 y otro código AA1234561234123."
+print(ium_pipe(texto))
+```
+**Salida:**
+```
+"1K1027361200102,IUM_Ok|AA1234561234123,Err_IUM_4"
 ```
 
-## 📌 Funciones Principales
+### 2. `ium_unique(texto: str) -> tuple`
+Esta función extrae el primer código IUM válido encontrado en el texto y lo devuelve como una tupla con su clasificación.
 
-### `packIUMtotEXC(text, patrones, DICRE, lpatrones)`
+**Ejemplo:**
+```python
+from medkode import ium_unique
 
-🔹 Devuelve una cadena con los códigos y sus respectivas clasificaciones separadas por `|`.
+texto = "El código 1K1027361200102 es correcto."
+print(ium_unique(texto))
+```
+**Salida:**
+```
+('1K1027361200102', 'IUM_Ok')
+```
 
-### `packIUMuno(text, patrones, DICRE, lpatrones)`
+### 3. `ium_tuple(texto: str) -> list`
+Esta función devuelve una lista de tuplas con todos los códigos IUM encontrados en el texto y su clasificación.
 
-🔹 Retorna solo el primer código clasificado o `0, SIN_IUM` si no se encuentra ninguno.
+**Ejemplo:**
+```python
+from medkode import ium_tuple
 
-### `packIUM(text, patrones, DICRE, lpatrones)`
+texto = "Aquí hay dos códigos: 1K1027361200102 y AA1234561234123."
+print(ium_tuple(texto))
+```
+**Salida:**
+```
+[('1K1027361200102', 'IUM_Ok'), ('AA1234561234123', 'Err_IUM_4')]
+```
 
-🔹 Devuelve una lista de códigos y su clasificación basada en patrones paramétricos.
+## Clasificación de códigos IUM
 
-## 📄 Licencia
+La estructura del código IUM es `NLNNNNNNNNNNNNN`, donde:
+- `N` representa un número.
+- `L` representa una letra.
 
-Este proyecto está bajo la Licencia MIT.
+### Reglas de validación
+
+Los códigos se validan según las siguientes reglas:
+
+| Expresión Regular | Ejemplo | Clasificación | Error |
+|------------------|---------|---------------|---------|
+| `\b[0-9][A-Z][0-9]{13}\b` | 1A1234561234123 | IUM_Ok | N1, N2 y N3 completos |
+| `\b[0-9][A-Z][0-9]{10}\b` | 1A1234567890 | IUM_N1_N2 | N1, N2 completos |
+| `\b[0-9][A-Z][0-9]{6}\b` | 1A123456 | IUM_N1 | N1 completo |
+| `\b[0-9][A-Z][0-9]{11,}\b` | 1A12345612341 | Err_IUM_1 | N3 incompleto |
+| `\b[A-Z]{2}[0-9]{13}\b` | AA1234561234123 | Err_IUM_4 | El primer dígito debe ser numérico |
+| `\b[A-Z][0-9]{13}\b` | A1234561234123 | Err_IUM_8 | Falta primer dígito |
+
+
+## Referencias oficiales
+
+El Identificador Único de Medicamentos (IUM) es una codificación establecida por el **Ministerio de Salud y Protección Social de Colombia**. Para más información, consulta las siguientes fuentes oficiales:
+- [Ministerio de Salud y Protección Social](https://www.minsalud.gov.co/)
+- [Normativa sobre Identificación de Medicamentos](https://www.minsalud.gov.co/salud/Lists/Normativa/AllItems.aspx)
+
+## Licencia
+
+Este proyecto está bajo la licencia **MIT**.
+
+
 
