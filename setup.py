@@ -6,7 +6,7 @@ with open("requirements.txt") as f:
 
 setup(
     name="p01_codigosmed",  # Nombre del paquete
-    version="0.1.8",  # Versión inicial
+    version="1.0.0",  # Versión inicial
     author="Juan Paez",
     author_email="jcpaez@gmail.com",
     description="Identificación de los códigos IUM de medicamentos",
@@ -18,7 +18,7 @@ setup(
     
     include_package_data=True,  # ✅ Permite incluir archivos no Python
     package_data={
-        "kodemed": ["../data/*.parquet"],  # ✅ Asegura que los archivos .parquet sean incluidos
+        "medkode": ["../data/*.parquet"],  # ✅ Asegura que los archivos .parquet sean incluidos
     },
 
     classifiers=[
