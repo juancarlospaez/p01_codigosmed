@@ -55,15 +55,9 @@ def load_parametric_tables():
 
     return DICRE, lpatrones
 
-
 def ClasTexARRAY(text):
     tokens = descripNorm(text)
     return np.array([(token, ClasToken(token)[1], i) for i, token in enumerate(tokens)], dtype=object)
-
-"""
-def ClasToken(token):
-    return next(((token, k) for j, k in patrones if re.match(j, token)), (token, 'ER'))
-"""
 
 def ClasToken(token):
     # Verificar que patrones exista y no sea None
@@ -74,19 +68,11 @@ def ClasToken(token):
         # Si patrones es None o está vacío, devolver un valor por defecto
         return (token, 'ER')
 
-
-
-
 def descripNorm(text):
     return [word.upper() for word in wordpunct_tokenize(NormT1(text)) if word not in stopwords.words('spanish') and word != "."]
 
 def NormT1(string):
     return " ".join(re.sub(r"[^a-zA-Z0-9]", " ", unidecode.unidecode(string).lower()).split())
-
-"""
-def PATRONVAL(qw):
-    return next((n for p, n in DICRE.get(qw[1], []) if re.match(p, qw[0])), 0)
-"""
 
 def PATRONVAL(qw):
     # Verificar que DICRE no sea None
@@ -96,31 +82,6 @@ def PATRONVAL(qw):
     else:
         # Si DICRE es None, devolver el valor por defecto
         return 0
-"""
-def packIUM(text):
-    tokens = ClasTexARRAY(text)
-    resultado1 = [PATRONVAL((token[0], token[1])) for token in tokens]
-    strVEC = "".join(["aaaa" if x == 0 else str(x) for x in resultado1])
-    
-    dfmatch = pd.DataFrame([(int(match.start() / 4), int(match.end() / 4), jpatr[1])
-                             for jpatr in lpatrones for match in re.finditer(jpatr[0], strVEC)],
-                            columns=['a', 'b', 'c']).drop_duplicates('a', keep='first')
-    return [("".join(tokens[int(k1):int(k2), 0]), k3) for k1, k2, k3 in dfmatch.to_numpy()]
-"""
-
-"""
-def packIUM(text):
-    tokens = ClasTexARRAY(text)
-    resultado1 = [PATRONVAL((token[0], token[1])) for token in tokens]
-    strVEC = "".join(["aaaa" if x == 0 else str(x) for x in resultado1])
-    
-    dfmatch = pd.DataFrame([(int(match.start() / 4), int(match.end() / 4), jpatr[1])
-                             for jpatr in lpatrones for match in re.finditer(jpatr[0], strVEC)],
-                            columns=['a', 'b', 'c']).drop_duplicates('a', keep='first')
-    unique_results = set((("".join(tokens[int(k1):int(k2), 0])), k3) for k1, k2, k3 in dfmatch.to_numpy())
-    return list(unique_results)
-"""
-
 
 def packIUM(text):
     tokens = ClasTexARRAY(text)
@@ -142,20 +103,12 @@ def packIUM(text):
     # Si lpatrones es None o no hay coincidencias, devolver una lista vacía
     return []
 
-"""
-def packIUMuno(text):
-    return next(iter(packIUM(text)), (0, "SIN_IUM"))
-"""
 def packIUMuno(text):
     # Obtenemos los resultados de packIUM y los convertimos a un conjunto para eliminar duplicados
     results = set(packIUM(text))
     # Tomamos el primer elemento o el valor por defecto
     return next(iter(results), (0, "SIN_IUM"))
 
-
-#def packIUMtotEXC(text):
-#    return "|".join(f"{j[0]},{j[1]}" for j in packIUM(text)) or "0,SIN_IUM"
- 
 def packIUMtotEXC(text):
     # Aplicamos set() para eliminar duplicados
     unique_results = set(f"{j[0]},{j[1]}" for j in packIUM(text))

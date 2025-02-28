@@ -18,7 +18,7 @@ setup(
     
     include_package_data=True,  # ✅ Permite incluir archivos no Python
     package_data={
-        "ecum": ["../data/*.parquet"],  # ✅ Asegura que los archivos .parquet sean incluidos
+        "kodemed": ["../data/*.parquet"],  # ✅ Asegura que los archivos .parquet sean incluidos
     },
 
     classifiers=[
