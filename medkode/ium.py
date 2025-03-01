@@ -12,13 +12,13 @@ patrones = None
 DICRE = None
 lpatrones = None
 
-def initialize():
+def _initialize():
     global patrones, DICRE, lpatrones
     if patrones is None or DICRE is None or lpatrones is None:
-        patrones = load_patterns()
-        DICRE, lpatrones = load_parametric_tables()
+        patrones = _load_patterns()
+        DICRE, lpatrones = _load_parametric_tables()
 
-def load_patterns():
+def _load_patterns():
     return [
         (r'\A[0-9]+\Z', 'NE'),
         (r'\A[0-9.]+\Z', 'NP'),
@@ -28,7 +28,7 @@ def load_patterns():
         (r'\A[A-Z0-9.]+\Z', 'AQ')
     ]
 
-def load_parametric_tables():
+def _load_parametric_tables():
     # Obtener la ruta absoluta de la carpeta del paquete
     base_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -55,11 +55,11 @@ def load_parametric_tables():
 
     return DICRE, lpatrones
 
-def ClasTexARRAY(text):
-    tokens = descripNorm(text)
-    return np.array([(token, ClasToken(token)[1], i) for i, token in enumerate(tokens)], dtype=object)
+def _ClasTexARRAY(text):
+    tokens = _descripNorm(text)
+    return np.array([(token, _ClasToken(token)[1], i) for i, token in enumerate(tokens)], dtype=object)
 
-def ClasToken(token):
+def _ClasToken(token):
     # Verificar que patrones exista y no sea None
     if patrones is not None:
         # Usar una lista por comprensión dentro del next()
@@ -68,13 +68,13 @@ def ClasToken(token):
         # Si patrones es None o está vacío, devolver un valor por defecto
         return (token, 'ER')
 
-def descripNorm(text):
-    return [word.upper() for word in wordpunct_tokenize(NormT1(text)) if word not in stopwords.words('spanish') and word != "."]
+def _descripNorm(text):
+    return [word.upper() for word in wordpunct_tokenize(_NormT1(text)) if word not in stopwords.words('spanish') and word != "."]
 
-def NormT1(string):
+def _NormT1(string):
     return " ".join(re.sub(r"[^a-zA-Z0-9]", " ", unidecode.unidecode(string).lower()).split())
 
-def PATRONVAL(qw):
+def _PATRONVAL(qw):
     # Verificar que DICRE no sea None
     if DICRE is not None:
         # Continuar con la búsqueda usando .get()
@@ -84,8 +84,8 @@ def PATRONVAL(qw):
         return 0
 
 def ium_tuple(text):
-    tokens = ClasTexARRAY(text)
-    resultado1 = [PATRONVAL((token[0], token[1])) for token in tokens]
+    tokens = _ClasTexARRAY(text)
+    resultado1 = [_PATRONVAL((token[0], token[1])) for token in tokens]
     strVEC = "".join(["aaaa" if x == 0 else str(x) for x in resultado1])
     
     # Verificar si lpatrones existe y no es None
@@ -115,7 +115,7 @@ def ium_pipe(text):
     # Unimos los resultados con "|" o devolvemos el valor por defecto si no hay resultados
     return "|".join(unique_results) or "0,SIN_IUM"
 
-initialize()  # Se llama una sola vez para cargar los valores en memoria
+_initialize()  # Se llama una sola vez para cargar los valores en memoria
 
 if __name__ == "__main__":
     textor = '1K1027361000103,IUM_Ok|1K1027361200102,IUM_Ok|AA1234561234123,Err_IUM_4|AA1234561234123,Err_IUM_4|AA1234561234123,Err_IUM_4|AA1234561234123,Err_IUM_4'
