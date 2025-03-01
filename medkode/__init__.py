@@ -5,3 +5,7 @@ __all__ = ["ium_pipe", "ium_unique", "ium_tuple"]
 import sys
 if 'medkode.ium' in sys.modules:
     del sys.modules['medkode.ium']
+
+# Controlar lo que se muestra en el autocompletado y dir()
+def __dir__():
+    return ["ium_pipe", "ium_unique", "ium_tuple"]
